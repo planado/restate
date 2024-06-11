@@ -1,0 +1,19 @@
+{
+  "name": "@planado-2024/restate",
+  "version": "0.1.7",
+  "description": "Reactive State Manager",
+  "license": "UNLICENSED",
+  "esy": {
+    "build": "dune build",
+    "buildsInSource": "_build"
+  },
+  "dependencies": {
+    "@opam/dune": "^3.6.1",
+    "@opam/ppxlib": "^0.28.0",
+    "ocaml": "4.14.0"
+  },
+  "devDependencies": {
+    "@opam/merlin": "4.7-414",
+    "@opam/ocaml-lsp-server": "1.15.1-4.14"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "@planado-2024/restate",
+  "sources": [{ "dir": "src", "subdirs": true }],
+  "package-specs": { "module": "es6", "in-source": true },
+  "suffix": ".bs.js",
+  "warnings": { "number": "+A-9-40-42" },
+  "bsc-flags": ["-bs-super-errors"]
+}

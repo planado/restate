@@ -1,0 +1,5 @@
+(executable
+ (package restate)
+ (name bin)
+ (public_name restate)
+ (libraries restate))

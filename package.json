@@ -1,0 +1,24 @@
+{
+  "name": "@planado-2024/restate",
+  "version": "0.1.0",
+  "description": "Reactive State Manager",
+  "keywords": [
+    "ReScript"
+  ],
+  "bugs": {
+    "url": "https://github.com/planado/restate/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/planado/restate.git"
+  },
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "rescript build -with-deps",
+    "postinstall": "node ./postinstall.js",
+    "watch": "rescript build -with-deps -w"
+  },
+  "devDependencies": {
+    "rescript": "^10.1.0"
+  }
+}
