@@ -3,13 +3,13 @@ module Array = Js.Array2
 module Promise = {
   type t<+'a> = promise<'a>
   @send
-  external thenResolveUnit: (t<unit>, (. unit) => 'b) => t<'b> = "then"
+  external thenResolveUnit: (t<unit>, unit => 'b) => t<'b> = "then"
   @val @scope("Promise")
   external resolve: unit => t<'a> = "resolve"
 }
 
 module Fn = {
-  let callWithFinally: (. (. unit) => 'a, (. unit) => unit) => 'a = %raw(`(fn, finallyCb) => {
+  let callWithFinally: (unit => 'a, unit => unit) => 'a = %raw(`(fn, finallyCb) => {
     try {
       return fn()
     } finally {
@@ -32,9 +32,9 @@ module Fn = {
   }
 }
 
-type notify = (. unit) => unit
+type notify = unit => unit
 
-type effect = (. unit) => unit
+type effect = unit => unit
 
 type unsubscribe = unit => unit
 
@@ -109,17 +109,17 @@ type subscribtionContext = {
   mutable lastState: unknown,
 }
 
-let castUnknownToAny: unknown => 'a = Obj.magic
+let castUnknownToAny: unknown => 'a = Obj.magic(_)
 
-let castAnyToUnknown: 'a => unknown = Obj.magic
+let castAnyToUnknown: 'a => unknown = Obj.magic(_)
 
-let castAnyActToUnknownAct: t<'a> => t<unknown> = Obj.magic
+let castAnyActToUnknownAct: t<'a> => t<unknown> = Obj.magic(_)
 
-let castUnknownActToAnyAct: t<unknown> => t<'a> = Obj.magic
+let castUnknownActToAnyAct: t<unknown> => t<'a> = Obj.magic(_)
 
-let castValueActToGeneric: valueAct<'a> => t<'a> = Obj.magic
+let castValueActToGeneric: valueAct<'a> => t<'a> = Obj.magic(_)
 
-let castComputedActToGeneric: computedAct<'a> => t<'a> = Obj.magic
+let castComputedActToGeneric: computedAct<'a> => t<'a> = Obj.magic(_)
 
 let initialActVersion = -1.
 
@@ -132,7 +132,7 @@ let context = {
   notify: %raw("undefined"),
 }
 
-context.notify = (. ()) => {
+context.notify = () => {
   let iterator = context.queue
 
   context.queue = []
@@ -141,16 +141,16 @@ context.notify = (. ()) => {
     let effects = iterator->Array.unsafe_get(effectsIdx)
     for effectIdx in 0 to effects->Array.length - 1 {
       let effect = effects->Array.unsafe_get(effectIdx)
-      effect(.)
+      effect()
     }
   }
 }
 
-let notify = (. ()) => context.notify(.)
+let notify = () => context.notify()
 
 let wrapNotify = fn => {
   let prevNotify = context.notify
-  context.notify = (. ()) => fn->Fn.call1(prevNotify)
+  context.notify = () => fn->Fn.call1(prevNotify)
 }
 
 @inline
@@ -193,7 +193,7 @@ let make = initial => {
   }
 
   {
-    let valueAct = valueAct->(Obj.magic: valueAct<'a> => valueAct<unknown>)
+    let valueAct = valueAct->(Obj.magic(_): valueAct<'a> => valueAct<unknown>)
     valueAct.get = () => {
       valueAct->syncEffects
       valueAct->castValueActToGeneric->addPublisher
@@ -227,7 +227,7 @@ let computed = (~equalityCheck as maybeEqualityCheck=?, fn) => {
   }
 
   {
-    let computedAct = computedAct->(Obj.magic: computedAct<'a> => computedAct<unknown>)
+    let computedAct = computedAct->(Obj.magic(_): computedAct<'a> => computedAct<unknown>)
     computedAct.get = () => {
       if computedAct.version !== context.version || context.maybeRoot === None {
         let computedPubs = computedAct.pubs
@@ -287,7 +287,7 @@ let subscribe = (act, cb) => {
     lastState: %raw("cb"),
   }
 
-  let rec effect = (. ()) => {
+  let rec effect = () => {
     if subscribtionContext.lastQueue !== context.queue {
       subscribtionContext.lastQueue = context.queue
 
@@ -296,22 +296,22 @@ let subscribe = (act, cb) => {
       let prevRoot = context.maybeRoot
       context.maybeRoot = Some(effect)
 
-      Fn.callWithFinally(.
-        (. ()) => {
+      Fn.callWithFinally(
+        () => {
           let calculatedState = act->get
           if subscribtionContext.lastState !== calculatedState {
             subscribtionContext.lastState = calculatedState
             cb->Fn.call1(calculatedState->castUnknownToAny)
           }
         },
-        (. ()) => {
+        () => {
           context.maybeRoot = prevRoot
         },
       )
     }
   }
 
-  effect(.)
+  effect()
 
   () => {
     context.version = context.version +. 1.

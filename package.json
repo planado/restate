@@ -1,6 +1,6 @@
 {
   "name": "@planado-2024/restate",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Reactive State Manager",
   "keywords": [
     "ReScript"
@@ -19,6 +19,6 @@
     "watch": "rescript build -with-deps -w"
   },
   "devDependencies": {
-    "rescript": "^10.1.0"
+    "rescript": "^11.1.1"
   }
 }

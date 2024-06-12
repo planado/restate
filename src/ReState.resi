@@ -14,7 +14,7 @@ type unsubscribe = unit => unit
 
 let subscribe: (t<'a>, 'a => unit) => unsubscribe
 
-type notify = (. unit) => unit
+type notify = unit => unit
 
 let notify: notify
 
